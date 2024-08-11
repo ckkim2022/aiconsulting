@@ -1,0 +1,118 @@
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>AI Consulting</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <link href="../static/img/favicon.png" rel="icon">
+  <link href="../static/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css' rel='stylesheet' />
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/glightbox@3.0.1/dist/css/glightbox.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="../static/css/styles.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
+
+</head>
+
+<body>
+<header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+
+      <a href="{{url_for('index')}}" class="logo d-flex align-items-center me-auto me-xl-0">
+        <h1 class="sitename">AI consulting</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <!-- Uncomment the lines as necessary and adjust the href attributes -->
+          <li><a class="nav-link scrollto {%if active_page == 'consult' %}active{%endif%}" href="{{url_for('chatbot')}}">AI-Consult</a></li>
+          {% if isAdmin %}
+          <li><a class="nav-link scrollto {%if active_page == 'human' %}active{%endif%}" href="{{url_for('human')}}">Consult-Form</a></li>
+          {% endif %}
+          <li><a class="nav-link scrollto {%if active_page == 'reservation' %}active{%endif%}" href="{{url_for('reservation')}}">Reservation</a></li>
+          {% if isAdmin %}
+          <li><a class="nav-link scrollto {%if active_page == 'data' %}active{%endif%}" href="{{url_for('admin')}}">Admin</a></li>
+          {% endif %}
+          {% if isLogin %}
+          <li><a class="nav-link scrollto {%if active_page == 'profile' %}active{%endif%}" href="{{url_for('profile')}}">My Page</a></li>
+          {% endif %}
+          {% if isLogin %}
+          <li><a class="getstarted scrollto" href="{{url_for('logout')}}">Logout</a></li>
+          {% else %}
+          <li><a class="getstarted scrollto" href="{{url_for('login')}}">Login</a></li>
+          {% endif %}
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+    </div>
+</header>
+
+  {% block index %}
+  {% endblock %}
+
+  {% block chatbot %}
+  {% endblock %}
+
+  {% block data %}
+  {% endblock %}
+
+    {% block human %}
+  {% endblock %}
+
+      {% block profile %}
+  {% endblock %}
+
+  {% block chatting %}
+{% endblock %}
+
+  {% block reservation %}
+  {% endblock %}
+
+
+  {% block admin %}
+  {% endblock %}
+
+  {% block user_reservations %}
+    {% endblock %}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,
+  });
+</script>
+
+<!--  <script src="../static/js/main.js"></script>-->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js'></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const mobileNavToggle = document.querySelector(".mobile-nav-toggle");
+      const navbar = document.querySelector("#navbar");
+
+      mobileNavToggle.addEventListener("click", function () {
+        navbar.classList.toggle("navbar-mobile");
+        this.classList.toggle("bi-list");
+        this.classList.toggle("bi-x");
+      });
+    });
+  </script>
+</body>
+
+</html>

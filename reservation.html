@@ -1,0 +1,365 @@
+{% extends "header.html" %}
+<!-- .navbar -->
+{% block reservation %}
+
+<title>Consultation Reservation</title>
+
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+    }
+
+    .page-title {
+        margin-top: 80px;
+        font-size: 36px;
+        color: #333;
+    }
+
+    #calendar {
+        max-width: 900px;
+        margin: 40px auto;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        overflow: auto;
+    }
+
+    .fc-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .fc-button-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .fc-button-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .modal-content {
+        border-radius: 10px;
+    }
+
+    .modal-header {
+        background-color: #28a745;
+        color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .fc-highlight {
+        background-color: rgba(40, 167, 69, 0.3);
+    }
+
+    .fc-daygrid-day-number {
+        color: #28a745;
+    }
+
+    .fc-daygrid-day, .fc-timegrid-slot {
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .fc-daygrid-day:hover, .fc-timegrid-slot:hover {
+        background-color: rgba(40, 167, 69, 0.1);
+        transform: scale(1.02);
+    }
+
+    .fc-today {
+        background-color: #ffeb3b !important;
+    }
+
+    .instructions {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .instructions h2 {
+        color: #28a745;
+    }
+
+    .instructions p {
+        font-size: 16px;
+        color: #666;
+    }
+
+    .instructions ul {
+        padding-left: 20px;
+    }
+
+    .instructions li {
+        margin-bottom: 10px;
+    }
+
+    .instructions li::marker {
+        color: #28a745;
+    }
+
+    .fc-event {
+        cursor: pointer;
+    }
+
+    b {
+        font-weight: 600 !important;
+    }
+
+    .fc-timegrid-slot {
+        padding: 10px 20px !important;
+    }
+
+    .fc-timegrid-slot-label {
+        padding-left: 20px;
+    }
+
+    .fc-timegrid-slot-lane {
+        padding-right: 20px;
+    }
+
+    .fc-scrollgrid-sync-inner {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+</style>
+
+</head>
+<body>
+<div class="modal fade" id="viewEventModal" tabindex="-1" aria-labelledby="viewEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewEventModalLabel">Reservation Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="viewEventTitle">Title</label>
+                    <input type="text" class="form-control" id="viewEventTitle" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="viewEventDescription">Description</label>
+                    <textarea class="form-control" id="viewEventDescription" readonly></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="viewEventStartTime">Start Time</label>
+                    <input type="text" class="form-control" id="viewEventStartTime" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="viewEventEndTime">End Time</label>
+                    <input type="text" class="form-control" id="viewEventEndTime" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="viewEventUsername">Username</label>
+                    <input type="text" class="form-control" id="viewEventUsername" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h1 class="text-center mb-5 page-title" data-aos="fade-up" style="margin-top:100px; color:#134B70">Reservation</h1>
+
+<div class="instructions">
+    <h2>How to Reserve a Consultation</h2>
+    <p>To reserve a consultation, please follow these steps:</p>
+    <ul>
+        <li>Navigate to the calendar below and select an available time slot on a Monday or Wednesday.</li>
+        <li>Click on the time slot to open the reservation form.</li>
+        <li>Fill in the required details in the form and click 'Save'.</li>
+        <li>Your reservation will be added to the calendar and you will receive a confirmation.</li>
+    </ul>
+</div>
+
+<div id="calendar" style="margin-top:30px"></div>
+
+<!-- Event Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Reserve Consultation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label for="eventTitle">Title</label>
+                        <input type="text" class="form-control" id="eventTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Description</label>
+                        <textarea class="form-control" id="eventDescription" name="description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventStartTime">Start Time</label>
+                        <input type="text" class="form-control" id="eventStartTime" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventEndTime">End Time</label>
+                        <input type="text" class="form-control" id="eventEndTime" readonly>
+                    </div>
+                    <input type="hidden" id="eventStart" name="start">
+                    <input type="hidden" id="eventEnd" name="end">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var isAdmin = {{ isAdmin|tojson }};
+    var currentUser = '{{ session.get("username") }}';
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        height: 'auto',
+        selectable: true,
+        allDaySlot: false,
+        slotDuration: '01:00:00',
+        slotLabelInterval: '01:00',
+        headerToolbar: {
+            left: '',
+            center: 'title',
+            right: 'prev,next today'
+        },
+        hiddenDays: [0, 6], // Hide Sunday (0) and Saturday (6)
+        slotLabelFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            omitZeroMinute: false,
+            hour12: true
+        },
+        slotLabelContent: function(arg) {
+            var startHour = arg.date.getHours();
+            var endHour = startHour + 1;
+            var startTime = new Date(arg.date);
+            var endTime = new Date(arg.date);
+            endTime.setHours(endHour);
+
+            var formatTime = function(date) {
+                return date.toLocaleString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            };
+
+            return {
+                html: `<b>${formatTime(startTime)} - ${formatTime(endTime)}</b>`
+            };
+        },
+        selectAllow: function(selectInfo) {
+            var day = selectInfo.start.getUTCDay();
+            return day === 1 || day === 3; // 1 = Monday, 3 = Wednesday
+        },
+        select: function(info) {
+            $('#eventStart').val(info.startStr);
+            $('#eventEnd').val(info.endStr);
+            $('#eventStartTime').val(info.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+            $('#eventEndTime').val(info.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+            $('#eventModal').modal('show');
+        },
+        eventClick: function(info) {
+            if (isAdmin || info.event.extendedProps.username === currentUser) {
+                $('#viewEventTitle').val(info.event.title);
+                $('#viewEventDescription').val(info.event.extendedProps.description);
+                $('#viewEventStartTime').val(info.event.start.toLocaleString());
+                $('#viewEventEndTime').val(info.event.end.toLocaleString());
+                $('#viewEventUsername').val(info.event.extendedProps.username);
+                $('#viewEventModal').modal('show');
+            } else {
+                alert("You do not have permission to view the details of this reservation.");
+            }
+        },
+        events: function(fetchInfo, successCallback, failureCallback) {
+            $.ajax({
+                url: '/api/getReservations',
+                method: 'GET',
+                success: function(data) {
+                    data.forEach(event => {
+                        if (isAdmin) {
+                            event.color = '#A475CB';
+                        } else {
+                            event.color = event.username === currentUser ? '#A475CB' : '#B3B3B3';
+                        }
+                    });
+                    successCallback(data);
+                },
+                error: function() {
+                    failureCallback();
+                }
+            });
+        },
+        businessHours: {
+            daysOfWeek: [1, 3],
+            startTime: '08:00',
+            endTime: '20:00'
+        },
+        slotMinTime: "08:00:00",
+        slotMaxTime: "20:00:00"
+    });
+
+    calendar.render();
+
+    $('#eventForm').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/api/saveReservation',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.status === 'success') {
+                    calendar.addEvent({
+                        title: $('#eventTitle').val(),
+                        start: $('#eventStart').val(),
+                        end: $('#eventEnd').val(),
+                        description: $('#eventDescription').val(),
+                        username: currentUser,
+                        color: '#A475CB'
+                    });
+                    $('#eventModal').modal('hide');
+                    $('#eventForm')[0].reset();
+                } else {
+                    alert('Error saving reservation: ' + response.message);
+                }
+            }
+        });
+    });
+});
+
+
+    </script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+</body>
+
+</html>
+
+{% endblock %}

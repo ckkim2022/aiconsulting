@@ -1,0 +1,104 @@
+{% extends "header.html" %}
+{% block human %}
+<style>
+    .mycontainer {
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .form-label {
+        font-weight: bold;
+    }
+    .btn-primary {
+        background-color: #A475CB !important;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn-primary:hover {
+        background-color: #A91C8D !important;
+    }
+    .page-title {
+        color: #134B70;
+        font-size: 28px;
+    }
+</style>
+<body>
+    <div class="container mycontainer mt-6">
+        <h1 class="text-center mb-5 page-title" data-aos="fade-up">Consultation Form</h1>
+        <p class="text-center">Please submit the consultation form regarding the consultation you conducted with your students.</p>
+        <!-- Form Section -->
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <div class="card" data-aos="fade-in">
+                    <div class="card-body">
+                        <form id="consultationForm">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username of student</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name of student</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">Gender</label>
+                                    <div class="tooltip-wrapper" data-bs-toggle="tooltip" data-bs-placement="right" title="Please select your gender">
+                                        <select class="form-select" id="gender" name="gender" aria-describedby="genderHelp">
+                                            <option value="">-- Please Select --</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Consultation Content</label>
+                                <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+<script>
+    document.getElementById("consultationForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        var form = event.target;
+        var formData = new FormData(form);
+
+        fetch('/human', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Form submitted successfully!");
+                setTimeout(function() {
+                    window.location.href = "/";
+                }, 1000);
+            } else {
+                alert("Form submission failed. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Form submission failed. Please try again.");
+        });
+    });
+</script>
+
+</body>
+
+{% endblock %}

@@ -1,0 +1,91 @@
+
+{% extends "header.html" %}<!-- .navbar -->
+{% block admin %}
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .page-title {
+            margin-top: 80px;
+            font-size: 36px;
+            color: #333;
+        }
+
+        #reservation-table {
+            max-width: 900px;
+            margin: 40px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+
+        .past-date {
+            color: gray;
+        }
+    </style>
+<body>
+<h1 class="text-center mb-5 page-title" style="color:#134B70">Reservations</h1>
+
+<div id="reservation-table" class="table-responsive">
+    <table class="table mx-md-0 mx-5">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Description</th>
+                <th>Username</th>
+            </tr>
+        </thead>
+        <tbody id="reservation-body">
+            <!-- Reservations will be populated here by JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function formatDate(dateStr) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateStr).toLocaleDateString('en-US', options);
+    }
+
+    function isPastDate(dateStr) {
+        return new Date(dateStr) < new Date();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/api/getReservations')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('reservation-body');
+                data.forEach(reservation => {
+                    const row = document.createElement('tr');
+                    if (isPastDate(reservation.end)) {
+                        row.classList.add('past-date');
+                    }
+                    row.innerHTML = `
+                        <td>${reservation.title}</td>
+                        <td>${formatDate(reservation.start)}</td>
+                        <td>${formatDate(reservation.end)}</td>
+                        <td>${reservation.description}</td>
+                        <td>${reservation.username}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching reservations:', error));
+    });
+</script>
+</body>
+
+</html>
+{% endblock %}

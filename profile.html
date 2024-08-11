@@ -1,0 +1,414 @@
+{% extends "header.html" %}
+{% block profile %}
+<style>
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+    }
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: -10px;
+    }
+    .col-md-6 {
+        width: 50%;
+        padding: 10px;
+        display: flex;
+    }
+    .card {
+        background-color: #fffefe;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .fst-italic{
+
+        font-style:italic;
+    }
+    .card-body {
+        padding: 20px;
+        flex: 1;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    .card-body {
+        padding: 20px;
+    }
+    .card-title {
+        color: #134B70;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .sentiment-icon {
+        font-size: 32px;
+        margin-right: 10px;
+    }
+    .sentiment-text {
+        font-size: 24px;
+    }
+    .sentiment-description {
+        font-style: italic;
+        text-align: center;
+    }
+    .positive { color: #4CAF50; }
+    .neutral { color: #FFC107; }
+    .negative { color: #F44336; }
+    .orange{
+        color: #C57C0B;
+    }
+    .mt-7{
+            margin-top: 130px;
+
+    }
+        .chat-log {
+        height: 250px;
+        overflow-y: auto;
+        background: #f9f9f9;
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    .card-header .btn {
+    text-decoration: none;
+    color: #134B70;
+    }
+
+    .card-header .btn:hover {
+        color: #0056b3;
+    }
+        .accordion-button {
+        background-color: #fffefe;
+        color: #333;
+        font-size: 20px;
+        border: none;
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+    }
+
+    .accordion-button:not(.collapsed) {
+        color: #134B70;
+        background-color: #f8f8f8;
+        box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+    }
+
+    .accordion-header {
+        margin-bottom: -1px;
+        cursor: pointer;
+        font-size: 19px;
+    }
+
+    .accordion-header:hover {
+        color: #134B70;
+    }
+
+    .accordion-item {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-bottom: 10px;
+    }
+
+    .accordion-collapse {
+        border: none;
+    }
+
+    .accordion-body {
+        font-size: 18px;
+        color: #666;
+        background-color: #fff;
+    }
+    .color-gray{
+
+    color:#636363;
+    }
+
+
+    .page-title {
+        margin-top: 80px;
+        font-size: 36px;
+        color: #333;
+    }
+
+    #reservation-table {
+        max-width: 900px;
+        margin: 40px auto;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .table {
+        margin-top: 20px;
+    }
+
+    .past-date {
+        color: gray;
+    }
+
+    .btn-cancel {
+        color: #fff;
+        background-color: #dc3545;
+        border-color: #dc3545;
+        cursor: pointer;
+    }
+
+    .btn-cancel:hover {
+        color: white;
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+</style>
+<body>
+    <div class="container mycontainer mt-7 mb-5">
+        <h1 class="text-center mb-5 page-title" data-aos="fade-up">Profile Page</h1>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Basic Information</h2>
+                        <p><strong>Username:</strong> {{ user.username }}</p>
+                        <p><strong>Gender:</strong> {{ user.gender }}</p>
+                        <p><strong>Age:</strong> {{ user.age }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+
+                              <div class="card">
+                    <div class="card-body sentiment-card">
+                        <h2 class="card-title">Your Sentiment Score</h2>
+                        <p class="text-center color-gray">You can check how you have been feeling in recent days.</p>
+                        <p class="text-center">
+                            <i id="sentimentIcon" class="sentiment-icon"></i>
+                            <strong id="sentimentScore" class="sentiment-text"></strong>
+                        </p>
+                        <p id="sentimentDescription" class="sentiment-description"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Recent Dialogue History</h2>
+                        <p class="text-center color-gray">Recent consultation history with the AI chatbot.</p>
+                        <div class="chat-log">
+                            {% for message in messages %}
+                                <div class="mt-2"> <span class="fst-italic">Date: {{ message[2]}}</span></div>
+                                <div class="mt-1"><strong>{{ username }}:</strong> {{ message[0]}}</div>
+                                <div class="mt-1"><strong class="orange">AI:</strong> {{ message[1]}}</div>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Daily Engagement</h2>
+                        <p class="text-center color-gray">The number of consultation in recent days.</p>
+                        <canvas id="dailyEngagementChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="col-12 col-md-12">
+
+                <div class="card">
+                    <div class="card-body">
+
+            <h2 class="card-title">My Reservations</h2>
+
+<div id="reservation-table" class="table-responsive">
+    <table class="table mx-md-0 mx-5">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Description</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="reservation-body">
+            <!-- Reservations will be populated here by JavaScript -->
+        </tbody>
+    </table>
+</div>
+                    </div>
+</div>
+                            </div>
+            <div class="col-12 col-md-12">
+                <div class="card mt-md-3 mb-5">
+                    <div class="card-body">
+                        <h2 class="card-title">Consultation History</h2>
+                          <p class="text-center color-gray">Recent consultation history with the offical consultant.</p>
+
+                        <div class="accordion mt-4" id="consultationAccordion">
+                            {% for consult in consultations %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header accordion-button collapsed py-3 px-4" id="heading{{ loop.index }}"  data-bs-toggle="collapse"
+                                            data-bs-target="#collapse{{ loop.index }}" aria-expanded="false"
+                                            aria-controls="collapse{{ loop.index }}">
+                                    Consult on {{ consult.date }} about {{ consult.topic }}
+                                </h2>
+                                <div id="collapse{{ loop.index }}" class="accordion-collapse collapse"
+                                     aria-labelledby="heading{{ loop.index }}" data-bs-parent="#consultationAccordion">
+                                    <div class="accordion-body py-3 px-4">
+                                        <strong>Content:</strong> {{ consult.content }}<br>
+                                        <strong>Sentiment:</strong> {{ consult.sentiment }}%
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    var ctx = document.getElementById('dailyEngagementChart').getContext('2d');
+    var dailyEngagementChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ engagement_labels | tojson }},
+            datasets: [{
+                label: 'Daily Engagements',
+                data: {{ engagement_data | tojson }},
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+        var sentimentScore = {{ avg_sentiment }};
+        var sentimentElement = document.getElementById('sentimentScore');
+        var iconElement = document.getElementById('sentimentIcon');
+        var descriptionElement = document.getElementById('sentimentDescription');
+
+        sentimentElement.textContent = sentimentScore + '%';
+        if (sentimentScore >= 50) {
+            sentimentElement.className = 'sentiment-text positive';
+            iconElement.className = 'fas fa-smile sentiment-icon positive';
+            descriptionElement.textContent = 'You are feeling great!';
+        } else if (sentimentScore > 0 && sentimentScore < 50) {
+            sentimentElement.className = 'sentiment-text neutral';
+            iconElement.className = 'fas fa-meh sentiment-icon neutral';
+            descriptionElement.textContent = 'Things are okay, could be better.';
+        } else {
+            sentimentElement.className = 'sentiment-text negative';
+            iconElement.className = 'fas fa-frown sentiment-icon negative';
+            descriptionElement.textContent = 'You seem to be feeling down. Try to get consult with our AI chatbot';
+        }
+    </script>
+
+<script>
+    function formatDate(dateStr) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateStr).toLocaleDateString('en-US', options);
+    }
+
+    function isPastDate(dateStr) {
+        return new Date(dateStr) < new Date();
+    }
+
+    function cancelReservation(start, end) {
+        if (confirm('Are you sure you want to cancel this reservation?')) {
+            fetch('/api/cancelReservation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.querySelector(`tr[data-start="${start}"][data-end="${end}"]`).remove();
+                } else {
+                    alert('Error cancelling reservation: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error cancelling reservation:', error));
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/api/getMyReservations')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('reservation-body');
+                data.forEach(reservation => {
+                    const row = document.createElement('tr');
+                    row.dataset.start = reservation.start;
+                    row.dataset.end = reservation.end;
+                    if (isPastDate(reservation.end)) {
+                        row.classList.add('past-date');
+                        row.innerHTML = `
+                            <td>${reservation.title}</td>
+                            <td>${formatDate(reservation.start)}</td>
+                            <td>${formatDate(reservation.end)}</td>
+                            <td>${reservation.description}</td>
+                            <td>${reservation.username}</td>
+                            <td><span class="text-muted">Date has passed</span></td>
+                        `;
+                    } else {
+                        row.innerHTML = `
+                            <td>${reservation.title}</td>
+                            <td>${formatDate(reservation.start)}</td>
+                            <td>${formatDate(reservation.end)}</td>
+                            <td>${reservation.description}</td>
+                            <td>${reservation.username}</td>
+                            <td><button class="btn btn-cancel" onclick="cancelReservation('${reservation.start}', '${reservation.end}')">Cancel</button></td>
+                        `;
+                    }
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching reservations:', error));
+    });
+</script>
+</body>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends "header.html" %}
+{% block chatbot %}
+<head>
+    <style>
+        .chat-container {
+            max-width: 600px;
+            margin: auto;
+            margin-top: 2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            padding: 15px;
+        }
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .user-message {
+            text-align: left;
+            background-color:  #4197EE;
+            color: white;
+        }
+        .other-user-message {
+            text-align: left;
+            align-self: flex-start;
+            background-color:#C16402;
+            color: white;
+        }
+        .message-username {
+    margin-right: 10px;
+    color: white;
+}
+.tab-container {
+    margin: auto;
+    padding: 10px;
+    text-align: center;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background-color: #eee;
+    font-size: 16px;
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.tab-button:focus, .tab-button:hover {
+    background-color: #ddd;
+    border-color: #bbb;
+       outline: none !important;
+
+}
+
+.tab-button.active {
+    background-color: #EA8536;
+       outline: none !important;
+
+    color: white;
+    border-color: #C16402
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.tab-button.focus {
+    background-color: #EA8536;
+    color: white;
+    border-color: #C16402
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.mt-6 {
+    margin-top: 6rem;
+}
+
+.mt-6{
+    margin-top: 120px;
+}
+
+    </style>
+</head>
+<body>
+<div class="tab-container mt-6">
+    <button class="tab-button" onclick="switchRoom('personal')">Personal</button>
+    <button class="tab-button" onclick="switchRoom('academic')">Academic</button>
+    <button class="tab-button" onclick="switchRoom('appearance')">Appearance</button>
+    <button class="tab-button" onclick="switchRoom('relationship')">Relationship</button>
+    <button class="tab-button" onclick="switchRoom('etc')">Etc</button>
+</div>
+<div class="chat-container" data-aos="fade-in">
+    <h3 class="chat-title text-center">Group Chat Room</h3>
+    <p class="chat-description text-center">Communicate with your group in real-time</p>
+    <div class="chat-box" id="chat-box">
+        <!-- Past and new messages will be displayed here -->
+    </div>
+    <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Type a message...">
+        <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+
+
+
+
+<script>
+    var chatBox = document.getElementById('chat-box');
+    var currentUsername = '{{username}}';
+
+
+function addMessage(username, message) {
+    var messageElement = document.createElement('div');
+    messageElement.classList.add('chat-message', username === currentUsername ? 'user-message' : 'other-user-message');
+
+    var usernameSpan = document.createElement('span');
+    usernameSpan.classList.add('message-username');
+    usernameSpan.textContent = username + ": ";
+    usernameSpan.style.fontWeight = "bold";
+
+    var messageText = document.createElement('span');
+    messageText.textContent = message;
+
+    messageElement.appendChild(usernameSpan);
+    messageElement.appendChild(messageText);
+
+    chatBox.appendChild(messageElement);
+}
+function fetchMessages(room) {
+    fetch(`/get_messages?room=${room}`)
+        .then(response => response.json())
+        .then(data => {
+            var chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = ''; // Clear previous messages
+            data.forEach(msg => addMessage(msg.username, msg.message));
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+}
+setInterval(() => {
+    var currentRoom = document.querySelector('.tab-button.active').textContent.toLowerCase();
+    fetchMessages(currentRoom);
+}, 2000);
+
+window.sendMessage = function() {
+    var userInput = document.getElementById('user-input').value;
+    var currentRoom = document.querySelector('.tab-button.active').textContent.toLowerCase();
+
+    if (userInput.trim() !== '') {
+        fetch('/post_message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `message=${encodeURIComponent(userInput)}&room=${encodeURIComponent(currentRoom)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Message sent:', data);
+            fetchMessages(currentRoom);  // Refresh messages
+        });
+
+        document.getElementById('user-input').value = '';
+    }
+}
+
+
+
+
+    document.getElementById('user-input').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+    var currentRoom = "personal";
+
+function switchRoom(room) {
+    if (currentRoom !== room) {
+        currentRoom = room;
+        document.querySelectorAll('.tab-button').forEach(button => {
+            if (button.textContent.toLowerCase() === room) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        });
+        chatBox.innerHTML = '';
+        fetchMessages(room);
+    }
+}
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.classList.remove('active');
+});
+document.querySelector('.tab-button').classList.add('active');
+
+</script>
+<script>
+
+</script>
+</body>
+{% endblock %}

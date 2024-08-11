@@ -1,0 +1,317 @@
+{% extends "header.html" %}
+{% block data %}
+<style>
+    .row {
+        position: relative;
+    }
+    .aih{
+        display:none;
+    }
+    .vertical-line {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        border-left: 2px dashed #ccc;
+        transform: translateX(-50%);
+    }
+    .chart-card2{
+        border: 1px solid #52BF6B !important;
+        background-color: rgba(246, 255, 248, 0.9) !important;
+    }
+    .green{
+        color: #52BF6B;
+    }
+       .orange{
+        color: rgba(237, 152, 62, 1);
+    }
+        .vertical-line {
+        border-left: 2px dashed #ccc;
+        height: 100%;
+    }
+    @media (max-width: 768px) {
+    .vertical-line {
+        display: none;
+    }
+    .aih{
+        display:block;
+    }
+
+    }
+</style>
+    <body>
+        <div class="container mycontainer mt-6">
+            <h1 class="text-center mb-5 page-title" data-aos="fade-up">Statistics</h1>
+            <div class="row">
+            <div class="vertical-line"></div> <!-- Vertical line added here -->
+
+                <div class="col-md-6 px-5">
+                    <h3 class="text-center mb-5 mt-md-0 mt-4 green" data-aos="fade-up">Human consultant</h3>
+                    <div class="card chart-card chart-card2" data-aos="fade-left">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Gender Distribution</h2>
+                            <p>Gender distribution of the users who consult with AI.</p>
+                            <canvas id="barchart1"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6 px-5">
+                                        <h3 class="text-center mb-5 mt-md-0 mt-4 orange" data-aos="fade-up">AI consultant</h3>
+
+                    <div class="card chart-card" data-aos="fade-right">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Gender Distribution</h2>
+                            <p>Gender distribution of the users who consult with AI.</p>
+                            <canvas id="barchart10"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                                <div class="col-md-6 px-5 mt-md-5">
+                    <h3 class="text-center mb-5 mt-md-0 mt-4 aih green" data-aos="fade-up">Human consultant</h3>
+
+                    <div class="card chart-card chart-card2" data-aos="fade-left">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Topic Distribution</h2>
+                            <p>The topic that users consult with the chatbot.</p>
+                            <canvas id="barchart2"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                                                <div class="col-md-6 px-5 mt-md-5">
+                                        <h3 class="text-center mb-5 mt-md-0 mt-4 aih orange" data-aos="fade-up">AI consultant</h3>
+
+                    <div class="card chart-card" data-aos="fade-right">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Topic Distribution</h2>
+                            <p>The topic that users consult with the chatbot.</p>
+                            <canvas id="barchart20"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mt-md-5 px-5">
+                    <h3 class="text-center mb-5 mt-md-0 mt-4 aih green" data-aos="fade-up">Human consultant</h3>
+
+                    <div class="card chart-card chart-card2"  data-aos="fade-left">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Sentiment Distribution</h2>
+                            <p>Sentiment distribution of student consultations.</p>
+                            <canvas class="mx-auto" id="piechart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                                <div class="col-md-6 mt-md-5 px-5">
+                                        <h3 class="text-center mb-5 mt-md-0 mt-4 aih orange" data-aos="fade-up">AI consultant</h3>
+
+                    <div class="card chart-card"  data-aos="fade-right">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Sentiment Distribution</h2>
+                            <p>Sentiment distribution of student consultations.</p>
+                            <canvas class="mx-auto" id="piechart2"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mt-md-5 px-5">
+                                        <h3 class="text-center mb-5 mt-md-0 mt-4 aih green" data-aos="fade-up">Human consultant</h3>
+
+                    <div class="card chart-card chart-card2"  data-aos="fade-left">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Consultations in Past 7 Days</h2>
+                            <p>Number of consultations in the past 7 days.</p>
+                            <canvas id="linechart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mt-md-5 px-5">
+                    <h3 class="text-center mb-5 mt-md-0 mt-4 aih orange" data-aos="fade-up">AI consultant</h3>
+
+                    <div class="card chart-card"  data-aos="fade-right">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Consultations in Past 7 Days</h2>
+                            <p>Number of consultations in the past 7 days.</p>
+                            <canvas id="linechart2"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const ctx1 = document.getElementById('barchart1');
+            var genderDistribution = {{ gender_distribution | tojson }};
+            var labels1 = Object.keys(genderDistribution); // ["Male", "Female", "Other"]
+            var data1 = Object.values(genderDistribution); // [100,300,25]
+            var colors1 = ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)','rgba(89, 204, 87,0.6)'];
+            new Chart(ctx1,{
+                type: 'bar',
+                data: {
+                    labels: labels1,
+                    datasets:[{
+                        label: "Sample Data",
+                        data: data1,
+                        backgroundColor: colors1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            }
+            );
+
+
+
+
+                        const ctx20 = document.getElementById('barchart20');
+            var labels2 = ["Personal","Academic","Appearance","Relationship","etc"];
+            var data2 = [30,50,20,85,15];
+            var colors2 = ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)','rgba(89, 204, 87,0.6)','rgba(161, 87, 204,0.6)','rgba(193, 204, 87,0.6)','rgba(204, 113, 87,0.6)']; // Define colors
+            new Chart(ctx20, {
+                type: 'bar',
+                data: {
+                    labels: labels2,
+                    datasets: [{
+                        label: "Sample Data",
+                        data: data2,
+                        backgroundColor: colors2 // Assign colors
+                    }]
+                },
+                                options: {
+                    plugins: {
+                        legend: {
+                            display: false // Hide legend
+                        }
+                    }
+                }
+            });
+
+
+            // Sentiment Distribution Pie Chart
+            const ctx3 = document.getElementById('piechart');
+            var sentimentDistribution = {
+                "Positive": 30,
+                "Negative": 20,
+                "Neutral": 50
+            };
+            var labels3 = Object.keys(sentimentDistribution);
+            var data3 = Object.values(sentimentDistribution);
+            new Chart(ctx3, {
+                type: 'pie',
+                data: {
+                    labels: labels3,
+                    datasets: [{
+                        label: "Sample Data",
+                        data: data3,
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)'
+                        ]
+                    }]
+                }
+            });
+
+            const ctx30 = document.getElementById('piechart2');
+            var sentimentDistribution = {
+                "Positive": 40,
+                "Negative": 30,
+                "Neutral": 30
+            };
+            var labels3 = Object.keys(sentimentDistribution);
+            var data3 = Object.values(sentimentDistribution);
+            new Chart(ctx30, {
+                type: 'pie',
+                data: {
+                    labels: labels3,
+                    datasets: [{
+                        label: "Sample Data",
+                        data: data3,
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)'
+                        ]
+                    }]
+                }
+            });
+
+            // Consultations in Past 7 Days Line Chart
+            const ctx4 = document.getElementById('linechart');
+            var consultationsData = {
+                "2024-04-12": 10,
+                "2024-04-13": 12,
+                "2024-04-14": 15,
+                "2024-04-15": 17,
+                "2024-04-16": 16,
+                "2024-04-17": 17,
+                "2024-04-18": 15
+            };
+            var dates = Object.keys(consultationsData);
+            var values = Object.values(consultationsData);
+            new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: "Consultations",
+                        data: values,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+                        const ctx40 = document.getElementById('linechart2');
+            var consultationsData = {
+                "2024-04-12": 10,
+                "2024-04-13": 20,
+                "2024-04-14": 15,
+                "2024-04-15": 25,
+                "2024-04-16": 30,
+                "2024-04-17": 20,
+                "2024-04-18": 35
+            };
+            var dates = Object.keys(consultationsData);
+            var values = Object.values(consultationsData);
+            new Chart(ctx40, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: "Consultations",
+                        data: values,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    </body>
+
+{% endblock %}

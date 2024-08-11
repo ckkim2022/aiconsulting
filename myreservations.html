@@ -1,0 +1,142 @@
+{% extends "header.html" %}
+{% block user_reservations %}
+
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+    }
+
+    .page-title {
+        margin-top: 80px;
+        font-size: 36px;
+        color: #333;
+    }
+
+    #reservation-table {
+        max-width: 900px;
+        margin: 40px auto;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .table {
+        margin-top: 20px;
+    }
+
+    .past-date {
+        color: gray;
+    }
+
+    .btn-cancel {
+        color: #fff;
+        background-color: #dc3545;
+        border-color: #dc3545;
+        cursor: pointer;
+    }
+
+    .btn-cancel:hover {
+        color: white;
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+</style>
+
+<body>
+<h1 class="text-center mb-5 page-title" style="color:#134B70">My Reservations</h1>
+
+<div id="reservation-table" class="table-responsive">
+    <table class="table mx-md-0 mx-5">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Description</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="reservation-body">
+            <!-- Reservations will be populated here by JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function formatDate(dateStr) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateStr).toLocaleDateString('en-US', options);
+    }
+
+    function isPastDate(dateStr) {
+        return new Date(dateStr) < new Date();
+    }
+
+    function cancelReservation(start, end) {
+        if (confirm('Are you sure you want to cancel this reservation?')) {
+            fetch('/api/cancelReservation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.querySelector(`tr[data-start="${start}"][data-end="${end}"]`).remove();
+                } else {
+                    alert('Error cancelling reservation: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error cancelling reservation:', error));
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/api/getMyReservations')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('reservation-body');
+                data.forEach(reservation => {
+                    const row = document.createElement('tr');
+                    row.dataset.start = reservation.start;
+                    row.dataset.end = reservation.end;
+                    if (isPastDate(reservation.end)) {
+                        row.classList.add('past-date');
+                        row.innerHTML = `
+                            <td>${reservation.title}</td>
+                            <td>${formatDate(reservation.start)}</td>
+                            <td>${formatDate(reservation.end)}</td>
+                            <td>${reservation.description}</td>
+                            <td>${reservation.username}</td>
+                            <td><span class="text-muted">Date has passed</span></td>
+                        `;
+                    } else {
+                        row.innerHTML = `
+                            <td>${reservation.title}</td>
+                            <td>${formatDate(reservation.start)}</td>
+                            <td>${formatDate(reservation.end)}</td>
+                            <td>${reservation.description}</td>
+                            <td>${reservation.username}</td>
+                            <td><button class="btn btn-cancel" onclick="cancelReservation('${reservation.start}', '${reservation.end}')">Cancel</button></td>
+                        `;
+                    }
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching reservations:', error));
+    });
+</script>
+</body>
+
+</html>
+{% endblock %}
